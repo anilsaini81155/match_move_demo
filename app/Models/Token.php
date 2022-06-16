@@ -13,8 +13,3 @@ class Token extends Model {
 }
 
 
-//id
-//user_id
-//role enum(Admin,User)
-//revoked enum (0,1) default 0
-//expire datetime

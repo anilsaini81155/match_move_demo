@@ -13,6 +13,3 @@ class SysConfig extends Model {
 }
 
 
-//id
-//name
-//config
