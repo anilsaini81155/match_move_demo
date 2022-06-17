@@ -29,11 +29,19 @@ class AuthCheckLib implements AuthCheck
         $data = json_decode(json_encode($data), 1);
         $key = hash('sha256', $data['config']);
 
-        $getTokenDeatils = Token::where(['token' => $rqst->bearerToken() ,'revoked' => 0])->first();
+        $getTokenDeatils = Token::where(['token' => $rqst->bearerToken(), 'revoked' => 0])->first();
 
         if ($getTokenDeatils->isEmpty()) {
             return false;
         }
+
+        $now = Carbon::now();
+        $totalDuration =  $getTokenDeatils->initial_rqst_datetime != NULL ? $now->diffInMinutes(Carbon::parse($getTokenDeatils->initial_rqst_datetime)) : 0;
+
+        if ($totalDuration > 60 && $getTokenDeatils->no_of_attempts == 10) {
+            $getTokenDeatils->no_of_attempts = $totalDuration = 0;
+        }
+
 
         $getUserDeatils = User::where(['mobile_no' => $getTokenDeatils->user_id])->first();
 
@@ -54,7 +62,15 @@ class AuthCheckLib implements AuthCheck
         if (hash_equals($token, $rqst->bearerToken())) {
 
             if (Carbon::now()->format('Y-m-d H:i:s') < Carbon::parse($getTokenDeatils->expires_at)->format('Y-m-d H:i:s')) {
-                return True;
+
+                if ($getTokenDeatils->no_of_attempts < $getTokenDeatils->max_no_of_rqts_per_hour && $totalDuration <= 60) {
+
+                    $getTokenDeatils = Token::where('id', $getTokenDeatils->id)
+                        ->update('no_of_attempts', ($getTokenDeatils->no_of_attempts + 1));
+
+                    return True;
+                }
+                return false;
             } else {
                 return false;
             }
