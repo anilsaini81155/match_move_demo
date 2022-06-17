@@ -3,7 +3,7 @@
 return[
   
     'Token_Generation_Json_Key' => 'token_hash',
-    'Token_Expiry' => '30D',
+    'Token_Expiry' => '30', //Days
 
 ];
 

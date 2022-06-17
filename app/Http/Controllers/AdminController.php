@@ -3,26 +3,29 @@
 namespace app\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\AdminService;
+use App\Services;
+use App\Models\User;
+use Illuminate\Support\Facades\Crypt;
 
-class AdminController{
+class AdminController
+{
 
     protected $adminService;
+    protected $tokenService;
 
 
-    public function __construct(Services\AdminService $adminService)
+    public function __construct(Services\AdminService $adminService, Services\TokenService $tokenService)
     {
         $this->adminService = $adminService;
-
-        
+        $this->tokenService = $tokenService;
     }
 
 
-    public function getAllTokens(Request $a){
+    public function getAllTokens(Request $a)
+    {
 
-     $this->adminService->getAllTokens();
-
-     $result = $this->itemService->getItem($a->all());
+        $result = $this->adminService->getAllTokens();
+        
         if ($result->isEmpty()) {
             return response()->json([
                 "message" => "Record not found"
@@ -30,31 +33,53 @@ class AdminController{
         }
         $result = $result->toJson(JSON_PRETTY_PRINT);
         return response($result, 200);
-
     }
 
-    public function revokeToken(Request $a){
-        $a->BearerToken;
+    public function revokeToken(Request $a)
+    {
+        $result = $this->adminService->revokeToken($a->all());
+        if ($result == false) {
+            return response()->json([
+                "message" => "Record not updated"
+            ], 404);
+        }
+        $result = $result->toJson(JSON_PRETTY_PRINT);
+        return response($result, 200);
+    }
 
-           $encodingAlgorithm = 'sha256';
+    public function login(Request $a)
+    {
 
-            $postData =json_encode($postData);  
+        $a->validate([
+            "email" => ["required", "email"],
+            "password" => ["required", "string", "max:16"]
+        ]);
 
-            $generatedKey = hash($encodingAlgorithm, $key);
-            
-            $generatedToken = hash_hmac($encodingAlgorithm, $postData, $generatedKey);
-            
-            $apiRequestHeader = getallheaders()['Authorization'];
+        $user = User::where([["email", $a->input("email")]])->first();
+
+        if ($user instanceof User) {
 
 
-            $result = $this->itemService->updateItem($a->all());
-            if ($result == false) {
+            if (Crypt::decrypt($user->password) == $a->password) {
+
+                $result = $this->tokenService->processUserForToken($user);
+
+                //generate a token and send token and start the session.
+
+                $result = $result->toJson(JSON_PRETTY_PRINT);
+                auth()->loginUsingId($user->id);
+                return response($result, 200);
+
+            } else {
+
                 return response()->json([
-                    "message" => "Record not updated"
-                ], 404);
+                    "message" => "Incorrect Password"
+                ], 403);
             }
-            $result = $result->toJson(JSON_PRETTY_PRINT);
-            return response($result, 200);
+        } else {
+            return response()->json([
+                "message" => "Incorrect Details Provided"
+            ], 403);
+        }
     }
-
 }

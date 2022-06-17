@@ -45,8 +45,6 @@ class TokenController
 
         $result = $this->tokenService->processUserForToken($a);
 
-        //check if the user exists ..
-        //else insert or share the token.    
 
         if ($result == false) {
             return response()->json([

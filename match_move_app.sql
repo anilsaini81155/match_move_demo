@@ -5,6 +5,7 @@ CREATE TABLE `token` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `revoked` tinyint(1) NOT NULL,
+  `token` varchar(250) NOT NULL DEFAULT '',
   `expires_at` timestamp NOT NULL , 
   `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active',
   `is_deleted` enum('True','False') NOT NULL DEFAULT 'False',
@@ -45,3 +46,6 @@ CREATE TABLE `sys_config` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1  COMMENT='List of system config';
+
+
+#create one entry for the sys_config and user as admin table ..

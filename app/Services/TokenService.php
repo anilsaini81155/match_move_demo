@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Token;
 use App\Models\SysConfig;
 use Illuminate\Support\Collection as Collect;
+use Carbon\Carbon;
 
 class TokenService
 {
@@ -31,36 +32,47 @@ class TokenService
 
     public function generateToken($user)
     {
+        DB::beginTransaction();
 
-        if ($user instanceof User) {
+        try {
 
-            //create one sys json config table 
-            //store the key in the table ..
+            if ($user instanceof User) {
 
-            $result =  SysConfig::where(['name' => Config('commonconfig.Token_Generation_Json_Key')]);
+                $result =  SysConfig::where(['name' => Config('commonconfig.Token_Generation_Json_Key'), 'status' => 'Active', 'is_deleted' => 'True'])
+                    ->get();
 
-            if ($result->isEmpty()) {
+                if ($result->isEmpty()) {
+                    return [];
+                }
+
+                $data = $result->toArray();
+
+                $data = json_decode(json_encode($data), 1);
+
+                $key = hash('sha256', $data['config']);
+
+                $request = [
+                    'mobile_no' => $user->mobile_no,
+                    'id' => $user->id,
+                    'created_at' => now()
+                ];
+
+                $requestData = json_encode($request);
+
+                $token = hash_hmac('sha256', $requestData, $key);
+
+                Token::insert(['user_id' => $user->id, 'expires_at' => Carbon::now()->addDay(config('commonconfig.Token_Expiry'))->format('Y-m-d H:i:s'), 'token' => $token]);
+
+                DB::commit();
+
+                return $token;
+            } else {
                 return [];
             }
-
-
-            $data = $result->toArray();
-
-            $data = json_decode(json_encode($data), 1);
-
-            $key = hash('sha256', $data['config']);
-
-            $request = ['user_id' => $user->id , 'generation_time' => now()];
-
-            $requestData = json_encode($request);
-
-            $token = hash_hmac('sha256', $requestData, $key);
-
-            Token::insert(['user_id' => $user->id , 'expiry' => now() .Config('commonconfig.Token_Expiry')]);
-
-            return $token;
+        } catch (\Exception $ex) {
+            DB::rollback();
+            Log::info($ex);
+            return [];
         }
     }
-
-    
 }
