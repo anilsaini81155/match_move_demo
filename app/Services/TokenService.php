@@ -23,13 +23,13 @@ class TokenService
     }
 
     public function processUserForToken($a)
-    {
-        $userDetails = $this->userRepo->getDetails(['email' => $a->email, 'mobile_no' => $a->mobile_no, 'name' => $a->name]);
-
+    {   
+        $userDetails = $this->userRepo->getDetails(['email' => $a->email, 'contact_no' => $a->contact_no, 'name' => $a->name]);
+        
 
         if ($userDetails->isNotEmpty()) {
 
-            $userResult =   $this->userRepo->insert(['email' => $a->email, 'mobile_no' => $a->mobile_no, 'name' => $a->name]);
+            $userResult =   $this->userRepo->insert(['email' => $a->email, 'contact_no' => $a->contact_no, 'name' => $a->name]);
             return  $this->generateToken(User::where(['id' => $userResult])->get());
         } else {
             return  $this->generateToken($userDetails);
@@ -57,7 +57,7 @@ class TokenService
                 $key = hash('sha256', $data['config']);
 
                 $request = [
-                    'mobile_no' => $user->mobile_no,
+                    'contact_no' => $user->contact_no,
                     'id' => $user->id,
                     'created_at' => now()
                 ];

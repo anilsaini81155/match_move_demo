@@ -81,10 +81,10 @@ class TokenController
         *            mediaType="multipart/form-data",
         *            @OA\Schema(
         *               type="object",
-        *               required={"name","email", "mobile_no"},
+        *               required={"name","email", "contact_no"},
         *               @OA\Property(property="name", type="text"),
         *               @OA\Property(property="email", type="text"),
-        *               @OA\Property(property="mobile_no", type="text")
+        *               @OA\Property(property="contact_no", type="text")
         *            ),
         *        ),
         *    ),
@@ -104,7 +104,7 @@ class TokenController
         $a->validate([
             "name" => "required|max:100",
             "email" => "required|email",
-            "mobile_no" => "required|numeric|digits:10|regex:/^[6-9][0-9]{9}$/"
+            "contact_no" => "required|numeric|digits:10|regex:/^[6-9][0-9]{9}$/"
         ]);
 
         $result = $this->tokenService->processUserForToken($a);

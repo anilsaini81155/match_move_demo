@@ -20,7 +20,7 @@ class TokenTest extends TestCase
         $response = $this->post('/api/admin/CreateToken', [
             'email' => 'abc@xyz.com',
             'name' => 'apqad45',
-            'mobile_no' => 7867612345
+            'contact_no' => 7867612345
         ]);
         $response->assertStatus(201);
         

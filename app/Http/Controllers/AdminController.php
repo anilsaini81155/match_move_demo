@@ -154,12 +154,12 @@ class AdminController
         ]);
 
         $user = User::where([["email", $a->input("email")]])->first();
-
+        
         if ($user instanceof User) {
-
+            
 
             if (Crypt::decrypt($user->password) == $a->password) {
-
+                
                 $result = $this->tokenService->processUserForToken($user);
                 
                 if($result == false){

@@ -50,14 +50,14 @@ class AuthCheckLib implements AuthCheck
             $getTokenDeatils->no_of_attempts = $totalDuration = 0;
         }
 
-        $getUserDeatils = $this->userRepo->getDetails(['mobile_no' => $getTokenDeatils->user_id]);
+        $getUserDeatils = $this->userRepo->getDetails(['contact_no' => $getTokenDeatils->user_id]);
 
         if ($getUserDeatils->isEmpty()) {
             return false;
         }
 
         $request = [
-            'mobile_no' => $getUserDeatils->mobile_no,
+            'contact_no' => $getUserDeatils->contact_no,
             'id' => $getTokenDeatils->user_id,
             'created_at' => $getTokenDeatils->created_at
         ];
