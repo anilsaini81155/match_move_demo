@@ -17,31 +17,27 @@ class AdminTest extends TestCase
     
     public function test_login_token(){
         $this->withoutExceptionHandling();
-        $response = $this->post('/api/CreateItem', [
-            'name' => 'rice',
-            'unit_price' => '40'
+        $response = $this->get('/api/admin/login', [
+            'email' => 'abc@xyz.com',
+            'password' => 'apq@ad45'
         ]);
-        $response->assertStatus(201);
-        $this->assertTrue(count(Item::all()) > 1);
+        $response->assertStatus(403);
+        
     }
 
     public function test_revoke_token(){
         $this->withoutExceptionHandling();
-        $response = $this->patch("/api/UpdateItem", [
-            'id' => '1',
-            'unit_price' => '40',
-            'name' => 'rice'
+        $response = $this->patch("/api/admin/RevokeToken", [
+            'bearerToken' => 'dsadasdsajnas12jns'
         ]);
-        $this->assertTrue(Item::findOrFail(1));
-        $response->assertStatus(200);
+        $response->assertStatus(404);
     }
 
-    public function test_delete_item(){
-        
+    public function test_all_token(){
         $this->withoutExceptionHandling();
-        $this->delete("/api/DeleteItem",[
-            'id' => '1',
-        ]); 
-        $this->assertDatabaseMissing('Item', ['id' => 1]); 
+        $response = $this->get('/api/admin/GetAllToken',[
+            'bearerToken' => 'dsadasdsajnas12jnass'
+        ]);
+        $response->assertStatus(404);
     }
 }
