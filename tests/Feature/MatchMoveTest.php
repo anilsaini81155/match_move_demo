@@ -15,33 +15,14 @@ class MatchMoveTest extends TestCase
      * @return void
      */
     
-    public function test_create_item(){
+    public function test_get_dashboard_data()
+    {
         $this->withoutExceptionHandling();
-        $response = $this->post('/api/CreateItem', [
-            'name' => 'rice',
-            'unit_price' => '40'
-        ]);
-        $response->assertStatus(201);
-        $this->assertTrue(count(Item::all()) > 1);
+        $response = $this->withHeaders([
+            'Bearer Token' => '12dasdsajnad34dasdsajna',
+        ])->get('/api/matchMove/Dashboard');
+        $response->assertStatus(404);
     }
 
-    public function test_update_item(){
-        $this->withoutExceptionHandling();
-        $response = $this->patch("/api/UpdateItem", [
-            'id' => '1',
-            'unit_price' => '40',
-            'name' => 'rice'
-        ]);
-        $this->assertTrue(Item::findOrFail(1));
-        $response->assertStatus(200);
-    }
-
-    public function test_delete_item(){
-        
-        $this->withoutExceptionHandling();
-        $this->delete("/api/DeleteItem",[
-            'id' => '1',
-        ]); 
-        $this->assertDatabaseMissing('Item', ['id' => 1]); 
-    }
+  
 }

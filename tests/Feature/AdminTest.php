@@ -14,30 +14,34 @@ class AdminTest extends TestCase
      *
      * @return void
      */
-    
-    public function test_login_token(){
+
+    public function test_login_token()
+    {
         $this->withoutExceptionHandling();
-        $response = $this->get('/api/admin/login', [
+        $response = $this->get('/api/admin-v2/login', [
             'email' => 'abc@xyz.com',
             'password' => 'apq@ad45'
         ]);
         $response->assertStatus(403);
-        
     }
 
-    public function test_revoke_token(){
+    public function test_revoke_token()
+    {
         $this->withoutExceptionHandling();
-        $response = $this->patch("/api/admin/RevokeToken", [
-            'bearerToken' => 'dsadasdsajnas12jns'
+        $response = $this->withHeaders([
+            'Bearer Token' => '12dasdsajnad34dasdsajna',
+        ])->patch("/api/admin/RevokeToken", [
+            'token' => 'dsadasdsajnas12jns'
         ]);
         $response->assertStatus(404);
     }
 
-    public function test_all_token(){
+    public function test_all_token()
+    {
         $this->withoutExceptionHandling();
-        $response = $this->get('/api/admin/GetAllToken',[
-            'bearerToken' => 'dsadasdsajnas12jnass'
-        ]);
+        $response = $this->withHeaders([
+            'Bearer Token' => '12dasdsajnad34dasdsajna',
+        ])->get('/api/admin/GetAllToken');
         $response->assertStatus(404);
     }
 }
