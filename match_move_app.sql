@@ -1,22 +1,6 @@
 #database name
 CREATE DATABASE `my_proj`;
 
-CREATE TABLE `token` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `revoked` tinyint(1) NOT NULL,
-  `token` varchar(250) NOT NULL DEFAULT '',
-  `expires_at` timestamp NOT NULL , 
-  `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active',
-  `is_deleted` enum('True','False') NOT NULL DEFAULT 'False',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `token_key1` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`id`) ON UPDATE CASCADE
-  ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='User Token Table';
-
-
 CREATE TABLE `sys_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL,
@@ -35,6 +19,22 @@ CREATE TABLE `sys_user` (
   KEY `email` (`email`),
   KEY `contact_number` (`contact_number`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='List of all system users';
+
+
+CREATE TABLE `token` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `revoked` tinyint(1) NOT NULL,
+  `token` varchar(250) NOT NULL DEFAULT '',
+  `expires_at` timestamp NOT NULL , 
+  `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active',
+  `is_deleted` enum('True','False') NOT NULL DEFAULT 'False',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `token_key1` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`id`) ON UPDATE CASCADE
+  ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='User Token Table';
 
 
 CREATE TABLE `sys_config` (
