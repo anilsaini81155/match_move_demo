@@ -50,4 +50,15 @@ CREATE TABLE `sys_config` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1  COMMENT='List of system config';
 
 
-#create one entry for the sys_config and user as admin table ..
+#default entry for the admin user
+
+INSERT INTO `sys_user` (`id`, `email`, `name`, `contact_number`, `password`, `status`, `user_type`, `max_no_of_rqts_per_hour`, `no_of_attempts`, `initial_rqst_datetime`, `is_deleted`, `created_at`, `updated_at`)
+VALUES
+	(1, 'admin@demoapp.com', 'admin', '7897891234', 'eyJpdiI6IlBuT0lqQ1BSZUhlcVVHcThJSXpCa2c9PSIsInZhbHVlIjoiT2FFSXZFalZxM1k1SjJQOGZFaFBhUT09IiwibWFjIjoiMzZmODc1MTQzNWE5M2Y3MTdhNjMwZGM2NDQ2ZWZiZGU2OWUwM2I5OTA0ZGFiNjRjYWQwYjVhNjQ2MTAwNjgzOCJ9', 'Active', 'admin', 100, 0, NULL, 'False', '2022-06-18 14:53:06', '2022-06-18 14:53:26');
+
+
+#default entry for the sys config 
+
+INSERT INTO `sys_config` (`id`, `name`, `config`, `status`, `is_deleted`, `created_at`, `updated_at`)
+VALUES
+	(1, 'token_hash', '"qbTQB2F1Fzp"', 'Active', 'False', '2022-06-18 15:01:49', '2022-06-18 15:02:41');
