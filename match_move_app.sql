@@ -5,7 +5,7 @@ CREATE TABLE `sys_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `contact_number` varchar(15) NOT NULL,
+  `contact_no` varchar(15) NOT NULL,
   `password` varchar(256) DEFAULT '',
   `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active',
   `user_type` enum('user','admin') NOT NULL DEFAULT 'user',
@@ -17,7 +17,7 @@ CREATE TABLE `sys_user` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `email` (`email`),
-  KEY `contact_number` (`contact_number`)
+  KEY `contact_no` (`contact_no`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='List of all system users';
 
 
@@ -52,7 +52,7 @@ CREATE TABLE `sys_config` (
 
 #default entry for the admin user
 
-INSERT INTO `sys_user` (`id`, `email`, `name`, `contact_number`, `password`, `status`, `user_type`, `max_no_of_rqts_per_hour`, `no_of_attempts`, `initial_rqst_datetime`, `is_deleted`, `created_at`, `updated_at`)
+INSERT INTO `sys_user` (`id`, `email`, `name`, `contact_no`, `password`, `status`, `user_type`, `max_no_of_rqts_per_hour`, `no_of_attempts`, `initial_rqst_datetime`, `is_deleted`, `created_at`, `updated_at`)
 VALUES
 	(1, 'admin@demoapp.com', 'admin', '7897891234', 'eyJpdiI6IlBuT0lqQ1BSZUhlcVVHcThJSXpCa2c9PSIsInZhbHVlIjoiT2FFSXZFalZxM1k1SjJQOGZFaFBhUT09IiwibWFjIjoiMzZmODc1MTQzNWE5M2Y3MTdhNjMwZGM2NDQ2ZWZiZGU2OWUwM2I5OTA0ZGFiNjRjYWQwYjVhNjQ2MTAwNjgzOCJ9', 'Active', 'admin', 100, 0, NULL, 'False', '2022-06-18 14:53:06', '2022-06-18 14:53:26');
 
