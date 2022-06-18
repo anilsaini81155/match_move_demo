@@ -17,9 +17,9 @@ class TokenRepository  extends BaseRepository
     public function getAllTokens()
     {
 
-        $allTokenResult =  $this->model->select('expires_at', DB::raw('Case when revoked = 0 then Active else InActive'), 'sys_user.name')
+        $allTokenResult =  $this->model->select('token.expires_at', 'sys_user.name', DB::raw('Case when revoked = 0 then "Active" else "InActive" end as Status'))
             ->join('sys_user', 'sys_user.id', 'token.user_id')
-            ->where('expires_at', '<=', now())
+            // ->where('token.expires_at', '<=', now());
             ->get();
 
         return $allTokenResult;

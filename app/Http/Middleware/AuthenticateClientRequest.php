@@ -6,7 +6,7 @@ use App\Contracts\AuthCheck;
 use Illuminate\Http\Request;
 use Closure;
 
-use App\Library;
+use App\Library\AuthCheckLib;
 
 class AuthenticateClientRequest
 {

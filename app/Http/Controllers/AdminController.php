@@ -48,7 +48,7 @@ class AdminController
         * )
         */ 
 
-    public function getAllTokens(Request $a)
+    public function getAllToken(Request $a)
     {
 
         $result = $this->adminService->getAllTokens();
@@ -99,15 +99,15 @@ class AdminController
 
     public function revokeToken(Request $a)
     {
-        $result = $this->adminService->revokeToken($a->all());
+        $result = $this->adminService->revokeToken($a);
         if ($result == false) {
             return response()->json([
                 "message" => "Record not updated"
             ], 404);
         }
-        $result = $result->toJson(JSON_PRETTY_PRINT);
+        
         return response()->json([
-            "message" => "Updated Successfully" , "data" => $result
+            "message" => "Updated Successfully" 
         ], 200);
         
     }

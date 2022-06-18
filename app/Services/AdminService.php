@@ -23,7 +23,7 @@ class AdminService
     public function revokeToken($a)
 
     {
-        $rslt = $this->tokenRepo->getTokenDetails(['token' => $a->bearerToken()]);
-        return  $this->tokenRepo->update(['is_revoked' => 1], $rslt->id);
+        $rslt = $this->tokenRepo->getTokenDetails(['token' => $a->token]);
+        return  $this->tokenRepo->update(['revoked' => 1], $rslt->id);
     }
 }

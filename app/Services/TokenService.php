@@ -29,9 +29,9 @@ class TokenService
         $userDetails = $this->userRepo->getDetails(['email' => $a->email, 'contact_no' => $a->contact_no, 'name' => $a->name]);
 
         if ($userDetails == false) {
-
+            
             $userResult =   $this->userRepo->insert(['email' => $a->email, 'contact_no' => $a->contact_no, 'name' => $a->name]);
-            return  $this->generateToken(User::where(['id' => $userResult])->get());
+            return  $this->generateToken(User::where(['id' => $userResult])->first());
         } else {
 
             return  $this->generateToken($userDetails);

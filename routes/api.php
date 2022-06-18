@@ -13,14 +13,14 @@ use Illuminate\Http\Request;
 |
 */
 
-// Route::prefix('/matchMove')->middleware(['AuthenticateClientRequest','throttle:10,1'])->group(function () {
+
 Route::prefix('/matchMove')->middleware(['AuthenticateClientRequest'])->group(function () {
 
     Route::get('/Dashboard', 'MatchMoveController@dashboard');
 });
 
-// Route::prefix('/admin')->middleware(['AuthenticateAdminRequest','throttle:10,1'])->group(function () {
-Route::prefix('/admin')->middleware(['AuthenticateAdminRequest'])->group(function () {
+
+Route::prefix('/admin')->middleware(['AuthenticateClientRequest'])->group(function () {
     
     Route::post('/CreateToken', 'TokenController@createToken');
     Route::get('/GetAllToken', 'AdminController@getAllToken');

@@ -27,7 +27,7 @@ class AuthCheckLib implements AuthCheck
     }
 
     public function checkTokenAuthenticity($rqst)
-    {
+    {   
         $header = getallheaders()['Authorization'];
         if (Str::startsWith($header, 'Bearer ')) {
             $header = Str::substr($header, 7);
