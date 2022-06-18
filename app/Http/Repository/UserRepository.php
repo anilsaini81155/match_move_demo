@@ -11,4 +11,9 @@ class UserRepository  extends BaseRepository{
         parent::__construct($model);
     }
 
+    public function getDetails($data)
+    {
+        return  $this->model->where($data)->get();
+    }
+
 }

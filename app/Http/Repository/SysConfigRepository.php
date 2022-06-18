@@ -11,4 +11,9 @@ class SysConfigRepository  extends BaseRepository{
         parent::__construct($model);
     }
 
+    public function getSysDetails($data)
+    {
+        return  $this->model->where($data)->get();
+    }
+
 }

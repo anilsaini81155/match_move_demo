@@ -5,33 +5,35 @@ namespace app\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services;
 use Illuminate\Support\Collection as Collect;
+use App\Contracts;
 
 class TokenController
 {
 
     protected $tokenService;
+    protected $authCheck;
 
-    public function __construct(Services\TokenService $tokenService)
+    public function __construct(Services\TokenService $tokenService, Contracts\AuthCheck $authCheck)
     {
         $this->tokenService = $tokenService;
+        $this->authCheck = $authCheck;
     }
 
 
     public function validateToken(Request $a)
     {
-        $a->validate([
-            "BearerToken" => "required"
-        ]);
 
-        $result = $this->itemService->getItem($a->all());
-        if ($result->isEmpty()) {
+        $result =  $this->authCheck->checkTokenAuthenticity($a);
+
+        if ($result == false) {
             return response()->json([
-                "message" => "Record not found"
-            ], 404);
+                "message" => "Unable to verify the token"
+            ], 403);
         }
-        $result = $result->toJson(JSON_PRETTY_PRINT);
-        return response($result, 200);
 
+        return response()->json([
+            "message" => "Token verified successfully"
+        ], 200);
     }
 
     public function createToken(Request $a)
@@ -45,16 +47,14 @@ class TokenController
 
         $result = $this->tokenService->processUserForToken($a);
 
-
         if ($result == false) {
             return response()->json([
                 "message" => "Token not created"
             ], 404);
         }
-        $result = $result->toJson(JSON_PRETTY_PRINT);
-        return response($result, 201);
 
-
-
+        return response()->json([
+            "message" => "Token generated successfully", "token" => $result
+        ], 201);
     }
 }

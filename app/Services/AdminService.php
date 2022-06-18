@@ -2,34 +2,26 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\Token;
-use App\Models\SysConfig;
+use App\Http\Repository;
 use Illuminate\Support\Collection as Collect;
 use DB;
 
 class AdminService
 {
+    protected $tokenRepo;
 
-    public function __construct()
+    public function __construct(Repository\TokenRepository $tokenRepo)
     {
+        $this->tokenRepo = $tokenRepo;
     }
 
     public function getAllTokens()
     {
-
-        $allTokenResult =  Token::select('expires_at', DB::raw('Case when revoked = 0 then Active else InActive'), 'sys_user.name')
-            ->join('sys_user', 'sys_user.id', 'token.user_id')
-            ->where('expires_at', '<=', now())
-            ->get();
-
-        return $allTokenResult;
+        return  $this->tokenRepo->getAllTokens();
     }
 
     public function revokeToken($a)
     {
-
-        return  Token::where('id', $a->id)
-            ->update(['is_revoked' => 1]);
+        return  $this->tokenRepo->update(['is_revoked' => 1], $a->id);
     }
 }

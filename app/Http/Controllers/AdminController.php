@@ -49,7 +49,6 @@ class AdminController
 
     public function login(Request $a)
     {
-
         $a->validate([
             "email" => ["required", "email"],
             "password" => ["required", "string", "max:16"]
@@ -63,12 +62,19 @@ class AdminController
             if (Crypt::decrypt($user->password) == $a->password) {
 
                 $result = $this->tokenService->processUserForToken($user);
+                
+                if($result == false){
+                    return response()->json([
+                        "message" => "Unable to generate the token"
+                    ], 403);
+                }
 
-                //generate a token and send token and start the session.
+                //auth()->loginUsingId($user->id);
+                
+                return response()->json([
+                    "message" => "Token generated successfully" , "token" => $result
+                ], 200);
 
-                $result = $result->toJson(JSON_PRETTY_PRINT);
-                auth()->loginUsingId($user->id);
-                return response($result, 200);
 
             } else {
 

@@ -4,35 +4,20 @@ namespace app\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class TokenController{
+class MatchMoveController
+{
 
 
 
     public function __construct()
     {
-        
     }
 
 
-    public function validateToken(Request $a){
-
-
+    public function dashboard(Request $a)
+    {
+        return response()->json([
+            "message" => "Welcome to the dashboard"
+        ], 200);
     }
-
-    public function createToken(Request $a){
-
-        $a->user_name;
-        $a->mobile_no;
-        $a->email;
-
-        //insert above
-        //insert above
-
-
-
-    }
-
 }
-
-
-?>

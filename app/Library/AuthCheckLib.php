@@ -4,6 +4,7 @@
 namespace App\Library;
 
 use App\Contracts\AuthCheck;
+use App\Http\Repository;
 use App\Models\SysConfig;
 use App\Models\Token;
 use App\Models\User;
@@ -12,14 +13,21 @@ use Carbon\Carbon;
 class AuthCheckLib implements AuthCheck
 {
 
-    public function __construct()
+    protected $userRepo;
+    protected $sysConfigRepo;
+    protected $tokenRepo;
+
+    public function __construct(Repository\TokenRepository $tokenRepo, Repository\SysConfigRepository $sysConfigRepo, Repository\UserRepository $userRepo)
     {
+
+        $this->userRepo = $userRepo;
+        $this->sysConfigRepo = $sysConfigRepo;
+        $this->tokenRepo = $tokenRepo;
     }
 
     public function checkTokenAuthenticity($rqst)
     {
-
-        $result =  SysConfig::where(['name' => Config('commonconfig.Token_Generation_Json_Key'), 'status' => 'Active', 'is_deleted' => 'True'])->get();
+        $result = $this->sysConfigRepo->getSysDetails(['name' => Config('commonconfig.Token_Generation_Json_Key'), 'status' => 'Active', 'is_deleted' => 'True']);
 
         if ($result->isEmpty()) {
             return false;
@@ -29,9 +37,9 @@ class AuthCheckLib implements AuthCheck
         $data = json_decode(json_encode($data), 1);
         $key = hash('sha256', $data['config']);
 
-        $getTokenDeatils = Token::where(['token' => $rqst->bearerToken(), 'revoked' => 0])->first();
+        $getTokenDeatils = $this->tokenRepo->getTokenDetails(['token' => $rqst->bearerToken(), 'revoked' => 0]);
 
-        if ($getTokenDeatils->isEmpty()) {
+        if ($getTokenDeatils == false) {
             return false;
         }
 
@@ -42,8 +50,7 @@ class AuthCheckLib implements AuthCheck
             $getTokenDeatils->no_of_attempts = $totalDuration = 0;
         }
 
-
-        $getUserDeatils = User::where(['mobile_no' => $getTokenDeatils->user_id])->first();
+        $getUserDeatils = $this->userRepo->getDetails(['mobile_no' => $getTokenDeatils->user_id]);
 
         if ($getUserDeatils->isEmpty()) {
             return false;
@@ -65,8 +72,7 @@ class AuthCheckLib implements AuthCheck
 
                 if ($getTokenDeatils->no_of_attempts < $getTokenDeatils->max_no_of_rqts_per_hour && $totalDuration <= 60) {
 
-                    $getTokenDeatils = Token::where('id', $getTokenDeatils->id)
-                        ->update('no_of_attempts', ($getTokenDeatils->no_of_attempts + 1));
+                    $getTokenDeatils = $this->tokenRepo->update(['no_of_attempts' => ($getTokenDeatils->no_of_attempts + 1)], $getTokenDeatils->id);
 
                     return True;
                 }
