@@ -13,7 +13,7 @@ class UserRepository  extends BaseRepository{
 
     public function getDetails($data)
     {
-        return  $this->model->where($data)->get();
+        return  $this->model->where($data)->first();
     }
 
 }

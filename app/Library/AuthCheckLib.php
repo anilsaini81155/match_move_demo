@@ -9,6 +9,7 @@ use App\Models\SysConfig;
 use App\Models\Token;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class AuthCheckLib implements AuthCheck
 {
@@ -27,17 +28,12 @@ class AuthCheckLib implements AuthCheck
 
     public function checkTokenAuthenticity($rqst)
     {
-        $result = $this->sysConfigRepo->getSysDetails(['name' => Config('commonconfig.Token_Generation_Json_Key'), 'status' => 'Active', 'is_deleted' => 'True']);
-
-        if ($result->isEmpty()) {
-            return false;
+        $header = getallheaders()['Authorization'];
+        if (Str::startsWith($header, 'Bearer ')) {
+            $header = Str::substr($header, 7);
         }
 
-        $data = $result->toArray();
-        $data = json_decode(json_encode($data), 1);
-        $key = hash('sha256', $data['config']);
-
-        $getTokenDeatils = $this->tokenRepo->getTokenDetails(['token' => $rqst->bearerToken(), 'revoked' => 0]);
+        $getTokenDeatils = $this->tokenRepo->getTokenDetails(['token' => $header, 'revoked' => 0]);
 
         if ($getTokenDeatils == false) {
             return false;
@@ -46,41 +42,30 @@ class AuthCheckLib implements AuthCheck
         $now = Carbon::now();
         $totalDuration =  $getTokenDeatils->initial_rqst_datetime != NULL ? $now->diffInMinutes(Carbon::parse($getTokenDeatils->initial_rqst_datetime)) : 0;
 
-        if ($totalDuration > 60 && $getTokenDeatils->no_of_attempts == 10) {
-            $getTokenDeatils->no_of_attempts = $totalDuration = 0;
-        }
 
-        $getUserDeatils = $this->userRepo->getDetails(['contact_no' => $getTokenDeatils->user_id]);
+        $getUserDeatils = $this->userRepo->getDetails(['id' => $getTokenDeatils->user_id]);
 
-        if ($getUserDeatils->isEmpty()) {
+        if ($getUserDeatils == false) {
             return false;
         }
 
-        $request = [
-            'contact_no' => $getUserDeatils->contact_no,
-            'id' => $getTokenDeatils->user_id,
-            'created_at' => $getTokenDeatils->created_at
-        ];
+        if ($totalDuration > 60 && $getTokenDeatils->no_of_attempts == 10) {
+            $getUserDeatils->no_of_attempts = $totalDuration = 0;
+        }
 
-        $requestData = json_encode($request);
 
-        $token = hash_hmac('sha256', $requestData, $key);
-
-        if (hash_equals($token, $rqst->bearerToken())) {
-
-            if (Carbon::now()->format('Y-m-d H:i:s') < Carbon::parse($getTokenDeatils->expires_at)->format('Y-m-d H:i:s')) {
-
-                if ($getTokenDeatils->no_of_attempts < $getTokenDeatils->max_no_of_rqts_per_hour && $totalDuration <= 60) {
-
-                    $getTokenDeatils = $this->tokenRepo->update(['no_of_attempts' => ($getTokenDeatils->no_of_attempts + 1)], $getTokenDeatils->id);
-
-                    return True;
-                }
-                return false;
+        if (Carbon::now()->format('Y-m-d H:i:s') < Carbon::parse($getTokenDeatils->expires_at)->format('Y-m-d H:i:s')) {
+            
+            if ($getUserDeatils->no_of_attempts < $getUserDeatils->max_no_of_rqts_per_hour && $totalDuration <= 60) {
+                
+                $data =  $this->userRepo->update(['no_of_attempts' => ($getUserDeatils->no_of_attempts + 1)], $getUserDeatils->id);
+                
+                return True;
             } else {
                 return false;
             }
         } else {
+            
             return false;
         }
     }

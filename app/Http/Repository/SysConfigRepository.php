@@ -13,7 +13,7 @@ class SysConfigRepository  extends BaseRepository{
 
     public function getSysDetails($data)
     {
-        return  $this->model->where($data)->get();
+        return  $this->model->where($data)->first();
     }
 
 }

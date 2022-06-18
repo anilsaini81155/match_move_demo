@@ -5,7 +5,7 @@ namespace app\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services;
 use Illuminate\Support\Collection as Collect;
-use App\Contracts;
+use App\Library;
 
 class TokenController
 {
@@ -13,7 +13,7 @@ class TokenController
     protected $tokenService;
     protected $authCheck;
 
-    public function __construct(Services\TokenService $tokenService, Contracts\AuthCheck $authCheck)
+    public function __construct(Services\TokenService $tokenService, Library\AuthCheckLib $authCheck)
     {
         $this->tokenService = $tokenService;
         $this->authCheck = $authCheck;

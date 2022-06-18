@@ -168,8 +168,6 @@ class AdminController
                     ], 403);
                 }
 
-                //auth()->loginUsingId($user->id);
-                
                 return response()->json([
                     "message" => "Token generated successfully" , "token" => $result
                 ], 200);
