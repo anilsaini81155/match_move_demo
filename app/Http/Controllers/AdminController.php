@@ -20,6 +20,33 @@ class AdminController
         $this->tokenService = $tokenService;
     }
 
+    /**
+        * @OA\Get(
+        * path="/api/admin/GetAllToken",
+        * operationId="GetAllToken",
+        * tags={"GetAllToken"},
+        * summary="Get All Users Data Active/Inactive",
+        * description="Get All Users Data Active/Inactive",
+        *     @OA\RequestBody(
+        *         @OA\JsonContent(),
+        *         @OA\MediaType(
+        *            mediaType="multipart/form-data",
+        *            @OA\Schema(
+        *               type="object",
+        *               required={"BearerToken"},
+        *               @OA\Property(property="BearerToken", type="text")
+        *            ),
+        *        ),
+        *    ),
+        *      @OA\Response(
+        *          response=200,
+        *          description="Data Fetched Successfully",
+        *          @OA\JsonContent()
+        *       ),
+        *      @OA\Response(response=400, description="Bad request"),
+        *      @OA\Response(response=404, description="Resource Not Found"),
+        * )
+        */ 
 
     public function getAllTokens(Request $a)
     {
@@ -32,8 +59,43 @@ class AdminController
             ], 404);
         }
         $result = $result->toJson(JSON_PRETTY_PRINT);
-        return response($result, 200);
+        
+        return response()->json([
+            "message" => "Data Fetched Successfully" , "data" => $result
+        ], 200);
+        
     }
+
+  /**
+        * @OA\Patch(
+        * path="/api/admin/RevokeToken",
+        * operationId="RevokeToken",
+        * tags={"RevokeToken"},
+        * summary="Revoke User Token",
+        * description="Revoke User Token",
+        *     @OA\RequestBody(
+        *         @OA\JsonContent(),
+        *         @OA\MediaType(
+        *            mediaType="multipart/form-data",
+        *            @OA\Schema(
+        *               type="object",
+        *               required={"token","BearerToken"},
+        *               @OA\Property(property="token", type="text"),        
+        *               @OA\Property(property="BearerToken", type="text")     
+        *            ),
+        *        ),
+        *    ),
+        *      @OA\Response(
+        *          response=200,
+        *          description="Updated Successfully",
+        *          @OA\JsonContent()
+        *       ),
+        *      @OA\Response(response=400, description="Bad request"),
+        *      @OA\Response(response=404, description="Resource Not Found"),
+        * )
+        */ 
+
+
 
     public function revokeToken(Request $a)
     {
@@ -44,8 +106,45 @@ class AdminController
             ], 404);
         }
         $result = $result->toJson(JSON_PRETTY_PRINT);
-        return response($result, 200);
+        return response()->json([
+            "message" => "Updated Successfully" , "data" => $result
+        ], 200);
+        
     }
+    
+    /**
+        * @OA\Get(
+        * path="/api/admin-v2/login",
+        * operationId="login",
+        * tags={"login"},
+        * summary="Admin Login ",
+        * description="Admin Login",
+        *     @OA\RequestBody(
+        *         @OA\JsonContent(),
+        *         @OA\MediaType(
+        *            mediaType="multipart/form-data",
+        *            @OA\Schema(
+        *               type="object",
+        *               required={"name","email", "password"},
+        *               @OA\Property(property="name", type="text"),
+        *               @OA\Property(property="email", type="text")
+        *            ),
+        *        ),
+        *    ),
+        *      @OA\Response(
+        *          response=200,
+        *          description="Token generated successfully",
+        *          @OA\JsonContent()
+        *       ),
+        *      @OA\Response(
+        *          response=403,
+        *          description="Unable to generate the token",
+        *          @OA\JsonContent()
+        *       ),
+        *      @OA\Response(response=400, description="Bad request"),
+        *      @OA\Response(response=404, description="Resource Not Found"),
+        * )
+        */ 
 
     public function login(Request $a)
     {
